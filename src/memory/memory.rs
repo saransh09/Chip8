@@ -17,10 +17,32 @@ const FONT: [u8; 80] = [
     0xF0, 0x80, 0xF0, 0x80, 0x80, // F
 ];
 
-struct Memory {}
+pub struct Memory {
+    ram: [u8; 4096],
+}
 
 impl Memory {
     pub fn new() -> Self {
-        Memory {}
+        let mut memory = Memory { ram: [0; 4096] };
+
+        for (i, byte) in FONT.iter().enumerate() {
+            memory.ram[0x50 + i] = *byte
+        }
+
+        memory
+    }
+
+    pub fn read(&self, address: u16) -> u8 {
+        self.ram[address as usize]
+    }
+
+    pub fn write(&mut self, address: u16, value: u8) {
+        self.ram[address as usize] = value
+    }
+
+    pub fn load_rom(&mut self, rom: &[u8]) {
+        for (i, byte) in rom.iter().enumerate() {
+            self.ram[0x200 + i] = *byte
+        }
     }
 }

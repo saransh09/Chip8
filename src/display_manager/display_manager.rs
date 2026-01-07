@@ -1,33 +1,49 @@
-use pixels::Pixels;
+use pixels::{Pixels, SurfaceTexture};
+use winit::{dpi::LogicalSize, event_loop::ActiveEventLoop, window::Window};
+
+use crate::frame_buffer::frame_buffer::FrameBuffer;
+
+const WIDTH: u32 = 64;
+const HEIGHT: u32 = 32;
+const SCALE: u32 = 10;
 
 pub struct DisplayManager {
-    width: u32,
-    height: u32,
-    buffer: Vec<Vec<u8>>,
+    window: &'static Window,
+    pixels: Pixels<'static>,
 }
 
 impl DisplayManager {
-    pub fn new(width: u32, height: u32) -> Self {
-        DisplayManager {
-            width,
-            height,
-            buffer: vec![vec![0; 64]; 32],
+    pub fn new(event_loop: &ActiveEventLoop) -> Self {
+        let window_attr = Window::default_attributes()
+            .with_title("CHIP-8")
+            .with_inner_size(LogicalSize::new(WIDTH * SCALE, HEIGHT * SCALE));
+        let window: &'static Window =
+            Box::leak(Box::new(event_loop.create_window(window_attr).unwrap()));
+
+        let size = window.inner_size();
+        let surface_texture = SurfaceTexture::new(size.width, size.height, window);
+        let pixels = Pixels::new(WIDTH, HEIGHT, surface_texture).unwrap();
+        window.request_redraw();
+
+        DisplayManager { window, pixels }
+    }
+
+    pub fn render(&mut self, frame_buffer: &FrameBuffer) {
+        let frame = self.pixels.frame_mut();
+        for (i, pixel) in frame_buffer.buffer().iter().enumerate() {
+            let rgba = if *pixel == 1 {
+                [0xFF, 0xFF, 0xFF, 0xFF]
+            } else {
+                [0x00, 0x00, 0x00, 0xFF]
+            };
+
+            let offset = i * 4;
+            frame[offset..offset + 4].copy_from_slice(&rgba);
         }
+        self.pixels.render().unwrap()
     }
 
-    pub fn clear(&mut self) {
-        self.buffer = vec![vec![0; 64]; 32]
-    }
-
-    pub fn get_pixel(&self, x: usize, y: usize) -> u8 {
-        self.buffer[x][y]
-    }
-
-    pub fn flip_pixel(&mut self, x: usize, y: usize) {
-        self.buffer[x][y] = !self.buffer[x][y]
-    }
-
-    pub fn draw_to_frame(&mut self, frame: &mut [u8]) {
-        unimplemented!()
+    pub fn request_redraw(&self) {
+        self.window.request_redraw();
     }
 }
