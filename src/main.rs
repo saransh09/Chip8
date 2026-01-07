@@ -82,6 +82,7 @@ fn main() {
     event_loop.set_control_flow(ControlFlow::Poll);
 
     // let mut app = App::new("IBM Logo.ch8");
-    let mut app = App::new("test_opcode.ch8");
+    // let mut app = App::new("test_opcode.ch8");
+    let mut app = App::new("tetris.rom");
     event_loop.run_app(&mut app).unwrap();
 }
