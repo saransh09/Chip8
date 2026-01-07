@@ -1,5 +1,3 @@
-use pixels::wgpu::naga::proc::index;
-
 pub struct FrameBuffer {
     buffer: [u8; 64 * 32],
 }
@@ -17,10 +15,6 @@ impl FrameBuffer {
 
     pub fn clear(&mut self) {
         self.buffer = [0; 64 * 32 as usize]
-    }
-
-    pub fn get_pixel(&self, x: usize, y: usize) -> u8 {
-        self.buffer[self.index(x, y)]
     }
 
     pub fn flip_pixel(&mut self, x: usize, y: usize) -> bool {

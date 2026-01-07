@@ -68,6 +68,10 @@ impl ApplicationHandler for App {
                     dm.request_redraw();
                 }
             }
+            WindowEvent::KeyboardInput { event, .. } => {
+                self.keypad
+                    .handle_key_event(event.physical_key, event.state.is_pressed());
+            }
             _ => {}
         }
     }
@@ -77,6 +81,7 @@ fn main() {
     let event_loop = EventLoop::new().unwrap();
     event_loop.set_control_flow(ControlFlow::Poll);
 
-    let mut app = App::new("IBM Logo.ch8");
+    // let mut app = App::new("IBM Logo.ch8");
+    let mut app = App::new("test_opcode.ch8");
     event_loop.run_app(&mut app).unwrap();
 }

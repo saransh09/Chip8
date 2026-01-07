@@ -1,4 +1,4 @@
-const FONT: [u8; 80] = [
+pub const FONT: [u8; 80] = [
     0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
     0x20, 0x60, 0x20, 0x20, 0x70, // 1
     0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
@@ -44,5 +44,9 @@ impl Memory {
         for (i, byte) in rom.iter().enumerate() {
             self.ram[0x200 + i] = *byte
         }
+    }
+
+    pub fn get_font_address(&self, character: u8) -> u16 {
+        0x50 + (character as u16 * 5)
     }
 }
