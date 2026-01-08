@@ -55,13 +55,19 @@ impl ApplicationHandler for App {
                 event_loop.exit();
             }
             WindowEvent::RedrawRequested => {
-                let opcode = self.cpu.fetch(&self.memory);
-                self.cpu.decode_and_execute(
-                    opcode,
-                    &mut self.memory,
-                    &mut self.frame_buffer,
-                    &self.keypad,
-                );
+                const CYCLES_PER_FRAME: usize = 10;
+
+                for _ in 0..CYCLES_PER_FRAME {
+                    let opcode = self.cpu.fetch(&self.memory);
+                    self.cpu.decode_and_execute(
+                        opcode,
+                        &mut self.memory,
+                        &mut self.frame_buffer,
+                        &self.keypad,
+                    );
+                }
+
+                self.cpu.decrement_timer();
 
                 if let Some(dm) = &mut self.display_manager {
                     dm.render(&self.frame_buffer);
@@ -83,6 +89,7 @@ fn main() {
 
     // let mut app = App::new("IBM Logo.ch8");
     // let mut app = App::new("test_opcode.ch8");
-    let mut app = App::new("tetris.rom");
+    let mut app = App::new("./c8games/TETRIS");
+    // let mut app = App::new("./c8games/TICTAC");
     event_loop.run_app(&mut app).unwrap();
 }

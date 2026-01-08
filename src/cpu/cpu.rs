@@ -27,6 +27,16 @@ impl CPU {
         }
     }
 
+    pub fn decrement_timer(&mut self) {
+        if self.delay_timer > 0 {
+            self.delay_timer -= 1;
+        }
+        if self.delay_timer > 0 {
+            self.sound_timer -= 1;
+            // TODO: Could add beep here later
+        }
+    }
+
     pub fn fetch(&mut self, memory: &Memory) -> u16 {
         let hi = memory.read(self.pc) as u16;
         let lo = memory.read(self.pc + 1) as u16;
